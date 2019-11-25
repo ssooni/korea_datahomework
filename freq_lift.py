@@ -19,11 +19,13 @@ def combine_counter(news, noOfNews, count_df, outFilePath):
     keyword_list = news["combine_counter"].values
     keyword_index_list = []
     total_combin_list = set()
+    stopword = pd.read_csv("2019_사회/stopword")["불용어"].tolist()
+
     for i, keyword in enumerate(keyword_list):
         for k in keyword:
             combine_keyword = "_".join(k)
             number_count = len(number.findall(combine_keyword))
-            if number_count == 0:
+            if number_count == 0 and k[0] not in stopword and k[1] not in stopword:
                 value1 = count_df.loc[k[0], "Value"]
                 value2 = count_df.loc[k[1], "Value"]
                 keyword_index_list.append([news.index[i], date_list[i], "_".join(k), value1 + value2])
@@ -50,6 +52,7 @@ def counter(news, noOfNews, outFilePath):
     date_list = news["일자"].values
     # 숫자가 포함된 문자의 경우 제거
     number = re.compile("([0-9]+)")
+    stopword = pd.read_csv("2019_사회/stopword")["불용어"].tolist()
 
     keyword_list = news["counter"].values
     keyword_index_list = []
@@ -57,7 +60,7 @@ def counter(news, noOfNews, outFilePath):
     for i, keyword in enumerate(keyword_list):
         for k in keyword:
             number_count = len(number.findall(k))
-            if number_count == 0:
+            if number_count == 0 and k not in stopword:
                 keyword_index_list.append([news.index[i], date_list[i], k])
                 total_keyword_list.add(k)
     df = pd.DataFrame(keyword_index_list, columns=["문서 식별자", "일자", "특성추출"])
@@ -68,6 +71,7 @@ def counter(news, noOfNews, outFilePath):
     print("counter End : " + str(len(total_keyword_list)) + " words")
 
     return count_df
+
 
 if __name__ == '__main__':
     news = pd.read_csv("./2019_사회/뉴스데이터_20190912-20191012.csv", converters={"뉴스 식별자": str})

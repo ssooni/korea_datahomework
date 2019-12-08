@@ -96,6 +96,7 @@ def lift(daily_news):
     # Lift(A→B) = (Confidence (A→B))/(Support (B))
     # A와 B가 컨피던스 / 서포트 B
     daily_news.loc[:, "Lift"] = daily_news.loc[:, "confidence A"].astype(float) - daily_news.loc[:, "Support B"].astype(float)
+    daily_news.loc[:, "targetValue"] = daily_news.loc[:, "Lift"] * daily_news.loc[:, "조합 빈도수"]
 
     return daily_news
 

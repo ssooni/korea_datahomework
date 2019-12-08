@@ -38,12 +38,6 @@ if __name__ == '__main__':
                     buffer = list()
                     for script in soup.find_all('script'):
                         script.extract()
-                    # paragraphs = soup.select_one(contents_key).find_all('p')
-                    # if len(paragraphs) > 0 :
-                    #     for paragraph in paragraphs:
-                    #         buffer.append(paragraph.get_text(strip=True).replace("\n", " ").replace("\r", ""))
-                    #     article = " ".join(buffer)
-                    # else:
                     article = soup.select_one(contents_key).get_text().replace("\n", " ").replace("\r", "")
                     article_list.append(row.tolist() + [article])
 

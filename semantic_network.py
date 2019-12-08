@@ -5,11 +5,8 @@ import matplotlib.pyplot as plt
 from community import community_louvain
 from networkx.algorithms.community import greedy_modularity_communities
 
-def network():
-    pass
+def network(base):
 
-
-if __name__ == '__main__':
     startDate = datetime.strptime("20190912", "%Y%m%d")
     endDate = datetime.strptime("20191012", "%Y%m%d")
 
@@ -24,12 +21,12 @@ if __name__ == '__main__':
 
         print(df.describe())
 
-        freqBaseNetwork = nx.from_pandas_edgelist(df, "Word1", "Word2", "Lift")
+        freqBaseNetwork = nx.from_pandas_edgelist(df, "Word1", "Word2", base)
         print(nx.info(freqBaseNetwork))
 
         betCent = nx.eigenvector_centrality(freqBaseNetwork)
         betCentDf = pd.DataFrame.from_dict(betCent, orient="index", columns=["Value"]).sort_values("Value", ascending=False)
-        betCentDf.to_csv("./2019_사회/network_%s_사회.csv" % date)
+        betCentDf.to_csv("./2019_사회/network_%s_%s_사회.csv" % (date, base))
 
         top_100_nodes = betCentDf.index.tolist()
         print(top_100_nodes)
@@ -45,10 +42,11 @@ if __name__ == '__main__':
                        font_size=10, with_labels=True, font_family='AppleGothic')
 
         plt.axis('off')
-        plt.savefig("./2019_사회/network_%s_사회.png" % date)
+        plt.savefig("./2019_사회/network_%s_%s_사회.png" % (date, base))
 
-        partition = community_louvain.best_partition(G1, weight="Lift")
-        pd.DataFrame.from_dict(partition, orient='index', columns=["community"]).sort_values("community").to_csv("./2019_사회/community_%s_사회.csv" % date)
+        partition = community_louvain.best_partition(G1, weight=base)
+        pd.DataFrame.from_dict(partition, orient='index', columns=["community"]).sort_values("community")\
+            .to_csv("./2019_사회/community_%s_%s_사회.csv" % (date, base))
 
         size = float(len(set(partition.values())))
 
@@ -65,5 +63,11 @@ if __name__ == '__main__':
         plt.axis('off')
         nx.draw_networkx_labels(G1, pos,  font_size=10, with_labels=True, font_family='AppleGothic')
         nx.draw_networkx_edges(G1, pos, alpha=0.5)
-        plt.savefig("./2019_사회/community_%s_사회.png" % date)
+        plt.savefig("./2019_사회/community_%s_%s_사회.png" % (date, base))
+        break
 
+
+if __name__ == '__main__':
+    network("Lift")
+    network("조합 빈도수")
+    network("targetValue")
